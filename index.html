@@ -1,32 +1,31 @@
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+  // Проверка, что мы в Telegram
+  const tg = window.Telegram?.WebApp;
 
-  const me = tg.initDataUnsafe.user;
+  const card = document.querySelector('.card');
 
-  const profiles = [
-    {
-      name: me.first_name,
-      photo: me.photo_url
+  if (!tg) {
+    // Если не Telegram — показываем сообщение
+    card.innerHTML = '<h2 style="color:white; padding:20px;">Откройте этот мини-эпп через Telegram</h2>';
+  } else {
+    tg.expand();
+
+    // Получаем данные пользователя
+    const me = tg.initDataUnsafe?.user;
+
+    if (!me) {
+      card.innerHTML = '<h2 style="color:white; padding:20px;">Ошибка: данные профиля не загрузились</h2>';
+    } else {
+      // Показываем имя и аватар
+      card.innerHTML = `
+        <img src="${me.photo_url || ''}" 
+             style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
+        <h2>${me.first_name}</h2>
+      `;
     }
-  ];
 
-  function show() {
-    const card = document.querySelector('.card');
-    card.innerHTML = `
-      <img src="${profiles[0].photo || ''}" 
-           style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
-      <h2>${profiles[0].name}</h2>
-    `;
+    // Кнопки
+    window.like = function() { tg.showAlert('❤️ Лайк отправлен'); }
+    window.next = function() { tg.showAlert('Анкет больше нет 😢'); }
   }
-
-  function like() {
-    tg.showAlert('❤️ Лайк отправлен');
-  }
-
-  function next() {
-    tg.showAlert('Анкет больше нет 😢');
-  }
-
-  show();
 </script>
