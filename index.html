@@ -1,69 +1,32 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Dating Mini App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      background:#0f0f0f;
-      color:white;
-      text-align:center;
-      font-family:Arial;
-    }
-    .card {
-      background:#1f1f1f;
-      margin:40px;
-      padding:40px;
-      border-radius:16px;
-    }
-    button {
-      font-size:28px;
-      padding:20px;
-      margin:10px;
-      border-radius:50%;
-    }
-  </style>
-</head>
-<body>
-
-<div class="card">
-  <h2 id="name">Загрузка...</h2>
-</div>
-
-<button onclick="next()">❌</button>
-<button onclick="like()">❤️</button>
-
 <script>
   const tg = window.Telegram.WebApp;
   tg.expand();
 
+  const me = tg.initDataUnsafe.user;
+
   const profiles = [
-    {name:'Алина'},
-    {name:'Дана'},
-    {name:'Айша'},
-    {name:'Мадина'}
+    {
+      name: me.first_name,
+      photo: me.photo_url
+    }
   ];
-  let i = 0;
 
   function show() {
-    document.getElementById('name').innerText =
-      profiles[i]?.name || 'Анкеты закончились 😢';
+    const card = document.querySelector('.card');
+    card.innerHTML = `
+      <img src="${profiles[0].photo || ''}" 
+           style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
+      <h2>${profiles[0].name}</h2>
+    `;
   }
 
   function like() {
-    alert('❤️ Лайк');
-    next();
+    tg.showAlert('❤️ Лайк отправлен');
   }
 
   function next() {
-    i++;
-    show();
+    tg.showAlert('Анкет больше нет 😢');
   }
 
   show();
 </script>
-
-</body>
-</html>
