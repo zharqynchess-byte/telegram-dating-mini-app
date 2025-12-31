@@ -1,31 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Dating Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background:#0f0f0f;
+      color:white;
+      text-align:center;
+      font-family:Arial;
+    }
+    .card {
+      background:#1f1f1f;
+      margin:40px;
+      padding:40px;
+      border-radius:16px;
+    }
+    button {
+      font-size:28px;
+      padding:20px;
+      margin:10px;
+      border-radius:50%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 id="name">Загрузка...</h2>
+</div>
+
+<button onclick="next()">❌</button>
+<button onclick="like()">❤️</button>
+
 <script>
-  // Проверка, что мы в Telegram
-  const tg = window.Telegram?.WebApp;
-
-  const card = document.querySelector('.card');
-
-  if (!tg) {
-    // Если не Telegram — показываем сообщение
-    card.innerHTML = '<h2 style="color:white; padding:20px;">Откройте этот мини-эпп через Telegram</h2>';
-  } else {
+  try {
+    const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Получаем данные пользователя
-    const me = tg.initDataUnsafe?.user;
+    const me = tg.initDataUnsafe?.user || { first_name: 'Пользователь', photo_url: '' };
 
-    if (!me) {
-      card.innerHTML = '<h2 style="color:white; padding:20px;">Ошибка: данные профиля не загрузились</h2>';
-    } else {
-      // Показываем имя и аватар
-      card.innerHTML = `
-        <img src="${me.photo_url || ''}" 
-             style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
-        <h2>${me.first_name}</h2>
-      `;
-    }
+    const card = document.querySelector('.card');
+    card.innerHTML = `
+      <img src="${me.photo_url}" 
+           style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
+      <h2>${me.first_name}</h2>
+    `;
 
-    // Кнопки
     window.like = function() { tg.showAlert('❤️ Лайк отправлен'); }
     window.next = function() { tg.showAlert('Анкет больше нет 😢'); }
+
+  } catch (err) {
+    document.body.innerHTML = '<h2 style="color:white; padding:20px;">Откройте мини-эпп через Telegram</h2>';
+    console.error(err);
   }
 </script>
+
+</body>
+</html>
