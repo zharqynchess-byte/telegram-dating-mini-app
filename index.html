@@ -14,48 +14,89 @@
     }
     .card {
       background:#1f1f1f;
-      margin:40px;
+      margin:40px auto;
       padding:40px;
       border-radius:16px;
+      width: 80%;
+    }
+    .card img {
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      margin-bottom:15px;
     }
     button {
       font-size:28px;
       padding:20px;
       margin:10px;
       border-radius:50%;
+      cursor:pointer;
     }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2 id="name">Загрузка...</h2>
+<div class="card" id="card">
+  <h2>Загрузка...</h2>
 </div>
 
-<button onclick="next()">❌</button>
-<button onclick="like()">❤️</button>
+<div style="text-align:center;">
+  <button onclick="dislike()">❌</button>
+  <button onclick="like()">❤️</button>
+</div>
 
 <script>
-  try {
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+try {
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-    const me = tg.initDataUnsafe?.user || { first_name: 'Пользователь', photo_url: '' };
+  const me = tg.initDataUnsafe?.user || { first_name: 'Пользователь', photo_url: '' };
 
-    const card = document.querySelector('.card');
+  // Массив профилей (для демо можно добавить несколько)
+  const profiles = [
+    { name: me.first_name, photo: me.photo_url },
+    { name: 'Алина', photo: '' },
+    { name: 'Дана', photo: '' },
+    { name: 'Айша', photo: '' },
+    { name: 'Мадина', photo: '' }
+  ];
+
+  let index = 0;
+
+  const card = document.getElementById('card');
+
+  function showProfile() {
+    if (!profiles[index]) {
+      card.innerHTML = '<h2>Анкет больше нет 😢</h2>';
+      return;
+    }
+    const p = profiles[index];
     card.innerHTML = `
-      <img src="${me.photo_url}" 
-           style="width:120px;height:120px;border-radius:50%;margin-bottom:15px;">
-      <h2>${me.first_name}</h2>
+      <img src="${p.photo || ''}">
+      <h2>${p.name}</h2>
     `;
-
-    window.like = function() { tg.showAlert('❤️ Лайк отправлен'); }
-    window.next = function() { tg.showAlert('Анкет больше нет 😢'); }
-
-  } catch (err) {
-    document.body.innerHTML = '<h2 style="color:white; padding:20px;">Откройте мини-эпп через Telegram</h2>';
-    console.error(err);
   }
+
+  window.like = function() {
+    tg.showAlert('❤️ Лайк отправлен');
+    nextProfile();
+  }
+
+  window.dislike = function() {
+    nextProfile();
+  }
+
+  function nextProfile() {
+    index++;
+    showProfile();
+  }
+
+  showProfile();
+
+} catch(err) {
+  document.body.innerHTML = '<h2 style="color:white; padding:20px;">Откройте мини-эпп через Telegram</h2>';
+  console.error(err);
+}
 </script>
 
 </body>
